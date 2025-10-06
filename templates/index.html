@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Personality Test 👻</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Floating ghosts background -->
+    <div class="ghost-container">
+        <div class="ghost ghost-1">👻</div>
+        <div class="ghost ghost-2">👻</div>
+        <div class="ghost ghost-3">👻</div>
+        <div class="ghost ghost-4">👻</div>
+        <div class="ghost ghost-5">👻</div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <span class="ghost-icon">👻</span>
+                <h1>Ghostly Personality Test</h1>
+            </div>
+            <p class="subtitle">Discover your true self through the spirits...</p>
+        </header>
+
+        <!-- Question Section -->
+        <div id="questionSection" class="question-section">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <span class="progress-text" id="progressText">Question 1 of {{ questions|length }}</span>
+            </div>
+
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1</div>
+                <h2 class="question-text" id="questionText">{{ questions[0] }}</h2>
+                
+                <div class="ghost-buttons">
+                    <button class="ghost-btn yes-btn" onclick="selectAnswer('yes')">
+                        <div class="ghost-hover">
+                            <span class="ghost-emoji">👻</span>
+                            <span class="ghost-glow"></span>
+                        </div>
+                        <span class="btn-text">YES</span>
+                    </button>
+                    
+                    <button class="ghost-btn no-btn" onclick="selectAnswer('no')">
+                        <div class="ghost-hover">
+                            <span class="ghost-emoji">💀</span>
+                            <span class="ghost-glow"></span>
+                        </div>
+                        <span class="btn-text">NO</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section" style="display: none;">
+            <div class="results-card">
+                <div class="results-header">
+                    <h2>Your Personality Revealed!</h2>
+                    <div class="personality-emoji" id="personalityEmoji">🌟</div>
+                </div>
+                
+                <div class="personality-type">
+                    <h3 id="personalityType">The Adventurer</h3>
+                    <p id="personalityDescription">Loading...</p>
+                </div>
+
+                <div class="traits-grid">
+                    <h4>Your Trait Scores</h4>
+                    <div class="trait-item">
+                        <span class="trait-label">Extroversion</span>
+                        <div class="trait-bar-container">
+                            <div class="trait-bar" id="trait-extroversion" style="width: 0%"></div>
+                            <span class="trait-value" id="value-extroversion">0%</span>
+                        </div>
+                    </div>
+                    <div class="trait-item">
+                        <span class="trait-label">Organization</span>
+                        <div class="trait-bar-container">
+                            <div class="trait-bar" id="trait-organization" style="width: 0%"></div>
+                            <span class="trait-value" id="value-organization">0%</span>
+                        </div>
+                    </div>
+                    <div class="trait-item">
+                        <span class="trait-label">Openness</span>
+                        <div class="trait-bar-container">
+                            <div class="trait-bar" id="trait-openness" style="width: 0%"></div>
+                            <span class="trait-value" id="value-openness">0%</span>
+                        </div>
+                    </div>
+                    <div class="trait-item">
+                        <span class="trait-label">Emotional Stability</span>
+                        <div class="trait-bar-container">
+                            <div class="trait-bar" id="trait-emotional_stability" style="width: 0%"></div>
+                            <span class="trait-value" id="value-emotional_stability">0%</span>
+                        </div>
+                    </div>
+                    <div class="trait-item">
+                        <span class="trait-label">Empathy</span>
+                        <div class="trait-bar-container">
+                            <div class="trait-bar" id="trait-empathy" style="width: 0%"></div>
+                            <span class="trait-value" id="value-empathy">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-traits">
+                    <h4>Key Traits</h4>
+                    <div class="traits-list" id="traitsList"></div>
+                </div>
+
+                <button class="restart-btn" onclick="restartTest()">
+                    <span>👻 Take Test Again</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = {{ questions|tojson }};
+        let currentQuestion = 0;
+        let answers = [];
+
+        function selectAnswer(answer) {
+            // Add animation to button
+            const btn = event.currentTarget;
+            btn.classList.add('clicked');
+            
+            // Store answer
+            answers.push(answer);
+            
+            // Move to next question or show results
+            setTimeout(() => {
+                currentQuestion++;
+                
+                if (currentQuestion < questions.length) {
+                    updateQuestion();
+                } else {
+                    submitAnswers();
+                }
+                
+                btn.classList.remove('clicked');
+            }, 400);
+        }
+
+        function updateQuestion() {
+            const questionText = document.getElementById('questionText');
+            const questionNumber = document.getElementById('questionNumber');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            // Fade out
+            questionText.style.opacity = '0';
+            questionNumber.style.opacity = '0';
+            
+            setTimeout(() => {
+                questionText.textContent = questions[currentQuestion];
+                questionNumber.textContent = `Question ${currentQuestion + 1}`;
+                progressText.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+                
+                const progress = ((currentQuestion + 1) / questions.length) * 100;
+                progressBar.style.width = progress + '%';
+                
+                // Fade in
+                questionText.style.opacity = '1';
+                questionNumber.style.opacity = '1';
+            }, 300);
+        }
+
+        async function submitAnswers() {
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answers: answers })
+                });
+                
+                const data = await response.json();
+                showResults(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        function showResults(data) {
+            const questionSection = document.getElementById('questionSection');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Hide questions, show results
+            questionSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+            
+            // Populate results
+            document.getElementById('personalityEmoji').textContent = data.personality.emoji;
+            document.getElementById('personalityType').textContent = data.personality.type;
+            document.getElementById('personalityDescription').textContent = data.personality.description;
+            
+            // Animate trait bars
+            setTimeout(() => {
+                Object.keys(data.traits).forEach(trait => {
+                    const value = data.traits[trait];
+                    const bar = document.getElementById(`trait-${trait}`);
+                    const valueSpan = document.getElementById(`value-${trait}`);
+                    
+                    bar.style.width = value + '%';
+                    valueSpan.textContent = Math.round(value) + '%';
+                });
+            }, 300);
+            
+            // Show key traits
+            const traitsList = document.getElementById('traitsList');
+            traitsList.innerHTML = data.personality.traits.map(trait => 
+                `<span class="trait-badge">${trait}</span>`
+            ).join('');
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = [];
+            
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('questionSection').style.display = 'block';
+            
+            document.getElementById('questionText').textContent = questions[0];
+            document.getElementById('questionNumber').textContent = 'Question 1';
+            document.getElementById('progressBar').style.width = '10%';
+            document.getElementById('progressText').textContent = `Question 1 of ${questions.length}`;
+        }
+    </script>
+</body>
+</html>
